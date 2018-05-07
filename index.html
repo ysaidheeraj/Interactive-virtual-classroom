@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+<script src="https://code.jquery.com/jquery-3.2.1.min.js" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+<script src="/socket.io/socket.io.js"></script>
+
+<!--<div class="container">
+    <br>
+    <div class="jumbotron">
+        <h1 class="display-4">Send message</h1>
+        <br>
+        <input id="name" class="form-control" placeholder="Name">
+        <br>
+        <textarea id="message" class="form-control" placeholder="Message"></textarea>
+        <br>
+        <button id="send" class="btn btn-success">Send</button>
+    </div>-->
+
+    <div  id="messages">
+
+    </div>
+</div>
+<script>
+    var url_string=window.location.href;
+     var url = new URL(url_string);
+    var c = url.searchParams.get("course");
+    var socket=io();
+    $(() => {
+        $("#send").click(()=>{
+            var message={name: $("#name").val(),message: $("#message").val()};
+            postMessages(message);
+        })
+        getMessages();
+    })
+
+    socket.on('message',addMessages);
+
+    function addMessages(message){
+        $("#messages").append(`<b>${message.name}</b>: ${message.message}<br>`);
+    }
+
+    function getMessages(){
+        $.get('http://192.168.31.166:3000/messages/'+c,(data)=>{
+            data.forEach(addMessages)
+        });
+    }
+
+    function postMessages (message) {
+        $.post('http://192.168.31.166:3000/messages',message);
+    }
+    //To modify server.js , classroom1.php and index.html for IP
+</script>

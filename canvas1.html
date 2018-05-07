@@ -1,0 +1,59 @@
+<!DOCTYPE HTML>
+<html lang="en">
+	<head>
+		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" crossorigin="anonymous"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+				
+		<title>Whiteboard - Client side</title>
+		<style type="text/css">
+			body {
+				background-color: black;
+			}
+
+			#myCanvas {
+				background-color: #fff;
+
+				width: 725px;
+				height: 530px;
+			}
+		</style>
+			
+	</head>
+	<body>
+		<!-- Note that the id of our canvas is #myCanvas -->
+		<div id="left" style="float:left; width:10%;background-color:black">
+			<button class="btn btn-default" style="width:80px;" onclick="saveImage()">Save</button>
+		</div>
+		<div id="right" style="float:right; width:90%;background-color:white">
+		<canvas id="myCanvas"></canvas>
+		</div>
+		<!-- Import jQuery, socket.io and our whiteboard.js -->
+		<script src="https://code.jquery.com/jquery-1.11.2.min.js" integrity="sha256-Ls0pXSlb7AYs7evhd+VLnWsZ/AqEHcXBeMZUycz/CcA=" crossorigin="anonymous"></script>
+		<script src="https://cdn.socket.io/socket.io-1.4.5.js"></script>
+		<script src="js/whiteboard1.js"></script>'
+		
+		<!-- Our JavaScript code, normally this would be in a .js file -->
+		<script type="text/javascript">
+			var socket = io();
+
+		socket.on('refresh', function (data) {
+			var c = document.getElementById("myCanvas");
+			var ctx = c.getContext("2d");
+			ctx.clearRect(0 , 0, 725, 530);
+		});
+			var whiteboard,temp="black";
+			function saveImage(){
+				whiteboard.download('image.jpg');
+			}
+			//socket.on("connect", function() {
+				/* at this point we have connected to the server,
+				 so we can create a new Whiteboard instance.
+				 We pass our canvas (`#myCanvas`) and socket */
+				whiteboard = new Whiteboard($("#myCanvas"), socket);
+				//whiteboard.decreaseThickness();		
+			//});
+		</script>
+	</body>
+</html>

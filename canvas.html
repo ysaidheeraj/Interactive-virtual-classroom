@@ -1,0 +1,89 @@
+<!DOCTYPE HTML>
+<html lang="en">
+	<head>
+		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" crossorigin="anonymous"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+				
+		<title>Whiteboard - Client side</title>
+		<style type="text/css">
+			body {
+				background-color: black;
+			}
+
+			#myCanvas {
+				background-color: #fff;
+
+				width: 725px;
+				height: 530px;
+			}
+		</style>
+			
+	</head>
+	<body>
+		<!-- Note that the id of our canvas is #myCanvas -->
+		<div id="left" style="float:left; width:10%;background-color:black">
+			<input class="btn btn-default" style="width:80px;" type="color" id="color" value="" placeholder="color"><br>
+			<button class="btn btn-default" style="width:80px;" onclick="myFunction()">Eraser</button><br>
+			<button class="btn btn-default" style="width:80px;" onclick="Draw()">Pen</button><br>
+			<button class="btn btn-default" style="width:80px;" onclick="openSlider()">Thickness</button>
+			<div id="slide">
+				<input class="slider" type="range" orient="vertical" style="width:80px;height:100px;" min="1" max="20" step="1" value="1"/>
+			</div>
+			<button class="btn btn-default" style="width:80px;" onclick="saveImage()">Save</button>
+			<button class="btn btn-default" style="width:80px;" onclick="refresh()">Clear</button>
+		</div>
+		<div id="right" style="float:right; width:90%;background-color:white">
+		<canvas id="myCanvas"></canvas>
+		</div>
+		<!-- Import jQuery, socket.io and our whiteboard.js -->
+		<script src="https://code.jquery.com/jquery-1.11.2.min.js" integrity="sha256-Ls0pXSlb7AYs7evhd+VLnWsZ/AqEHcXBeMZUycz/CcA=" crossorigin="anonymous"></script>
+		<script src="https://cdn.socket.io/socket.io-1.4.5.js"></script>
+		<script src="js/whiteboard.js"></script>'
+		
+		<!-- Our JavaScript code, normally this would be in a .js file -->
+		<script type="text/javascript">
+			var socket = io();
+			var whiteboard,temp="black";
+			var c = document.getElementById("color");
+			function refresh(){
+					var c = document.getElementById("myCanvas");
+					var ctx = c.getContext("2d");
+					ctx.clearRect(0 , 0, 725, 530);
+					socket.emit('refresh');
+			}
+			c.addEventListener("input", function() {
+    			whiteboard.__proto__.color = c.value;
+			}, false);
+			function myFunction() {
+				temp=c.value;
+				whiteboard.__proto__.color="white";
+			}
+			function Draw(){
+				whiteboard.__proto__.color=temp;
+			}
+			function openSlider(){
+				var x = document.getElementById("slide");
+    			if (x.style.display === "none") {
+        			x.style.display = "block";
+				} else {
+					x.style.display = "none";
+				}
+			}
+			$(".slider").on("input", function(){
+				whiteboard.__proto__.thickness=this.value;
+			});
+			function saveImage(){
+				whiteboard.download('image.jpg');
+			}
+			socket.on("connect", function() {
+				/* at this point we have connected to the server,
+				 so we can create a new Whiteboard instance.
+				 We pass our canvas (`#myCanvas`) and socket */
+				whiteboard = new Whiteboard($("#myCanvas"), socket);
+				//whiteboard.decreaseThickness();		
+			});
+		</script>
+	</body>
+</html>
